@@ -7,7 +7,7 @@ import logging
 import sqlite3
 import time
 from pathlib import Path
-
+import argparse
 import requests
 
 # ── Configuration ──────────────────────────────────────────────
@@ -53,11 +53,11 @@ def init_db(db_path: Path) -> sqlite3.Connection:
     """Creates the table if it doesn't exist."""
     conn = sqlite3.connect(db_path)
     conn.execute("""
-        CREATE TABLE IF NOT EXISTS temperatura (
-            ciudad   TEXT NOT NULL,
-            fecha    TEXT NOT NULL,
+        CREATE TABLE IF NOT EXISTS temperature (
+            city     TEXT NOT NULL,
+            date     TEXT NOT NULL,
             temp_max REAL,
-            UNIQUE (ciudad, fecha)          -- idempotency
+            UNIQUE (city, date)             -- idempotency
         )
     """)
     conn.commit()
@@ -74,7 +74,7 @@ def save(conn: sqlite3.Connection, city: str, data: dict):
     for date, temp in zip(dates, temp_maxs):
         # Using INSERT OR IGNORE — idempotent behavior
         cur = conn.execute("""
-            INSERT OR IGNORE INTO temperatura (ciudad, fecha, temp_max)
+            INSERT OR IGNORE INTO temperature (city, date, temp_max)
             VALUES (?, ?, ?)
         """, (city, date, temp))
         if cur.rowcount:
@@ -104,5 +104,46 @@ def run():
     conn.close()
     log.info("Extraction complete.")
 
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Maximum temperature scraper — Open-Meteo"
+    )
+    parser.add_argument(
+        "--cities",
+        nargs="+",
+        default=list(CITIES.keys()),
+        metavar="NAME",
+        help="Cities to query (default: all)"
+    )
+    parser.add_argument(
+        "--db",
+        type=Path,
+        default=DB_PATH,
+        help=f"Database path (default: {DB_PATH})"
+    )
+    args = parser.parse_args()
+
+    # Filter only the requested cities
+    filtered_cities = {
+        k: v for k, v in CITIES.items()
+        if k in [c.upper() for c in args.cities]
+    }
+
+    conn = init_db(args.db)
+    for city, coords in filtered_cities.items():
+        log.info(f"Downloading: {city}")
+        params = {
+            "latitude":     coords["lat"],
+            "longitude":    coords["lon"],
+            "daily":        "temperature_2m_max",
+            "timezone":     "America/Bogota",
+            "forecast_days": 7,
+        }
+        data = fetch(BASE_URL, params)
+        save(conn, city, data)
+    conn.close()
+
 if __name__ == "__main__":
-    run()
+    main()
+

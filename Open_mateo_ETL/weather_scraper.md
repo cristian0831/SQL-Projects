@@ -1,27 +1,27 @@
-# Open-Meteo API — Notas de referencia
+# Open-Meteo API — Reference Notes
 
-Documentación de la API que consume [weather_scraper.py](weather_scraper.py).
+Documentation for the API consumed by [weather_scraper.py](weather_scraper.py).
 
-## Endpoint utilizado
+## Endpoint used
 
 ```
 GET https://api.open-meteo.com/v1/forecast
 ```
 
-API de pronóstico meteorológico de [Open-Meteo](https://open-meteo.com/), gratuita y sin necesidad de API key para uso no comercial.
+Weather forecast API from [Open-Meteo](https://open-meteo.com/), free and requiring no API key for non-commercial use.
 
-## Parámetros usados en este proyecto
+## Parameters used in this project
 
-| Parámetro | Valor en el script | Descripción |
+| Parameter | Value in the script | Description |
 |---|---|---|
-| `latitude` / `longitude` | Coordenadas de cada ciudad (`CIUDADES`) | Ubicación del pronóstico. Acepta un solo par o listas separadas por coma para consultar varias ubicaciones en una sola llamada. |
-| `daily` | `temperature_2m_max` | Variable diaria a devolver. Es una lista separada por comas; se pueden pedir varias variables a la vez (ver más abajo). |
-| `timezone` | `America/Bogota` | Ajusta las fechas/horas devueltas a la zona horaria indicada en vez de UTC. |
-| `forecast_days` | `7` | Cantidad de días de pronóstico a futuro (por defecto 7, máximo 16). |
+| `latitude` / `longitude` | Coordinates of each city (`CITIES`) | Forecast location. Accepts a single pair or comma-separated lists to query multiple locations in a single call. |
+| `daily` | `temperature_2m_max` | Daily variable to return. It's a comma-separated list; multiple variables can be requested at once (see below). |
+| `timezone` | `America/Bogota` | Adjusts the returned dates/times to the specified timezone instead of UTC. |
+| `forecast_days` | `7` | Number of forecast days ahead (default 7, maximum 16). |
 
-## Otras variables `daily` disponibles
+## Other available `daily` variables
 
-La API ofrece muchas más variables agregadas por día que se podrían sumar al parámetro `daily`:
+The API offers many more daily-aggregated variables that could be added to the `daily` parameter:
 
 - `temperature_2m_max`, `temperature_2m_min`
 - `apparent_temperature_max`, `apparent_temperature_min`
@@ -31,18 +31,18 @@ La API ofrece muchas más variables agregadas por día que se podrían sumar al 
 - `sunrise`, `sunset`, `uv_index_max`
 - `shortwave_radiation_sum`, `et0_fao_evapotranspiration`
 
-## Otros parámetros relevantes de la API
+## Other relevant API parameters
 
-- `hourly`: variables por hora (temperatura, humedad, viento, presión, etc.) en vez de resúmenes diarios.
-- `current` / `current_weather=true`: condición actual instantánea.
-- `past_days`: incluye días históricos recientes junto con el pronóstico.
-- `start_date` / `end_date`: rango de fechas específico (formato `YYYY-MM-DD`), alternativa a `forecast_days`.
-- `temperature_unit`, `windspeed_unit`, `precipitation_unit`: unidades de medida (por defecto Celsius, km/h, mm).
-- `models`: permite elegir el modelo meteorológico (ej. ECMWF, GFS, ICON) en vez del modelo combinado por defecto.
+- `hourly`: hourly variables (temperature, humidity, wind, pressure, etc.) instead of daily summaries.
+- `current` / `current_weather=true`: instantaneous current conditions.
+- `past_days`: includes recent historical days alongside the forecast.
+- `start_date` / `end_date`: specific date range (`YYYY-MM-DD` format), an alternative to `forecast_days`.
+- `temperature_unit`, `windspeed_unit`, `precipitation_unit`: units of measurement (default Celsius, km/h, mm).
+- `models`: lets you choose the weather model (e.g. ECMWF, GFS, ICON) instead of the default combined model.
 
-## Formato de respuesta
+## Response format
 
-La respuesta es JSON con esta estructura relevante para `guardar()`:
+The response is JSON with this structure relevant to `save()`:
 
 ```json
 {
@@ -53,10 +53,10 @@ La respuesta es JSON con esta estructura relevante para `guardar()`:
 }
 ```
 
-Los arreglos dentro de `daily` están alineados por índice: la fecha en `time[i]` corresponde al valor en `temperature_2m_max[i]`.
+The arrays inside `daily` are aligned by index: the date at `time[i]` corresponds to the value at `temperature_2m_max[i]`.
 
-## Límites y buenas prácticas
+## Limits and best practices
 
-- No requiere autenticación ni API key para el tier gratuito.
-- Límite de uso justo (~10,000 llamadas/día) para uso no comercial; existe un tier comercial con API key para mayor volumen.
-- Se recomienda manejar reintentos con backoff ante errores 429/5xx, tal como implementa `fetch()` en el script.
+- No authentication or API key required for the free tier.
+- Fair-use limit (~10,000 calls/day) for non-commercial use; a commercial tier with an API key exists for higher volume.
+- It's recommended to handle retries with backoff on 429/5xx errors, as implemented by `fetch()` in the script.
