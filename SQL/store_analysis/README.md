@@ -64,3 +64,44 @@ Regression Model
 ## Phase 5: 
 Insigths and recomendation
 
+# Project Structure
+
+```
+SuperStoreProject/
+├── data/
+│   └── raw/                  # source CSV (git-ignored)
+├── db/
+│   └── superstore.db         # built by the ETL notebook (git-ignored, regenerate by re-running it)
+│
+├── notebooks/
+│   └── 01_etl_superstore.ipynb   # Phase 1 — ETL
+│
+├── src/                      # shared code every phase imports
+│   ├── config.py             #   RAW_PATH, DB_PATH
+│   └── db_utils.py           #   get_connection(), run_query()
+│
+├── scripts/                  # Phase 2-4, Python scripts, one folder per phase
+│   ├── phase2_business_diagnostics/
+│   │   └── queries/          #   .sql files run from the phase's scripts
+│   ├── phase3_eda/
+│   └── phase4_regression_model/
+│
+├── outputs/                  # generated tables/figures/models, mirrors scripts/ 1:1
+│   ├── phase2_business_diagnostics/
+│   ├── phase3_eda/
+│   └── phase4_regression_model/
+│
+├── dashboards/
+│   └── phase5_dashboard/     # Phase 5 — Power BI file
+│
+├── reports/                  # Phase 6 — business recommendations
+│
+├── docs/                     # ER diagram, pipeline flow diagram
+│
+├── pyproject.toml            # `src` installed as an editable package: pip install -e .
+├── requirements.txt
+└── .gitignore
+```
+
+Phase 1 stays a notebook; phases 2 onward are Python scripts so each phase can be broken into small, composable steps. Every script reaches the database the same way — `from src.db_utils import get_connection` — instead of each one hardcoding its own path or connection.
+
