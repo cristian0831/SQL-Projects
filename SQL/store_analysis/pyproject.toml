@@ -9,3 +9,10 @@ packages = ["src"]
 [build-system]
 requires = ["setuptools>=64.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = [
+    "integration: exercises the real committed db/superstore.db (schema/data smoke checks)",
+]
