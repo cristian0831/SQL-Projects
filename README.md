@@ -47,26 +47,9 @@ A fully designed SQLite database that models the core operations of a bank accou
 
 #### Superstore Analysis
 
-**Path:** [`SQL/store_analysis/`](SQL/store_analysis/)
+**Moved to its own repository:** [cristian0831/superstore-analysis](https://github.com/cristian0831/superstore-analysis)
 
-Business analysis of a retail superstore dataset (Kaggle) using SQL for data exploration and Python for visualization and modeling. The goal is to identify which products, regions, categories, and customer segments are most profitable.
-
-**Analysis pipeline:**
-1. Load CSV into SQL, inspect nulls, types, and date ranges
-2. Business performance queries (revenue trends, segment profitability)
-3. Deep exploratory data analysis (EDA)
-4. Regression model to predict sales or profit
-5. Insights and recommendations
-
-**Key questions answered:**
-- Is the business growing over time?
-- Which customer segment (Consumer, Corporate, Home Office) is most profitable?
-- Which geographic regions are most and least profitable?
-
-**Files:**
-- [`superstore-analysis.ipynb`](SQL/store_analysis/superstore-analysis.ipynb) — full analysis notebook
-- [`ER.png`](SQL/store_analysis/ER.png) — entity-relationship diagram for the dataset schema
-- [`README.md`](SQL/store_analysis/README.md) — dataset description and analysis plan
+Business analysis of a retail superstore dataset using SQL and Python: business diagnostics (growth, segment, discount and regional profitability), demand forecasting, and a planned profit regression model.
 
 ---
 
